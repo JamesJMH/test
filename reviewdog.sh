@@ -6,11 +6,12 @@ fi
 branch="${curBranch}/reviewdog"
 postfix=1
 exist=$(git branch | grep -cim1 $curBranch/reviewdog)
-while [[ $exist -eq 1 ]]; do
-  postfix=$postfix+1
+while [[ $exist == "1" ]]; do
+  echo $postfix
+  postfix=$((postfix + 1))
   exist=$(git branch | grep -cim1 $curBranch/reviewdog/${postfix})
 done
-branch = "${curBranch}/reviewdog"
+branch="$curBranch/reviewdog${postfix}"
 git co -b $branch
 git add .
 echo "How many commits to squash?"
@@ -26,6 +27,7 @@ url=$(hub pull-request -m "review dog comments" -b $toBranch -h $branch)
 urlList=(${url//// })
 PRNum=urlList[-1]
 repoName=urlList[-3]
+echo $url
 export CI_PULL_REQUEST=${PRNum}
 export CI_REPO_OWNER=${owner}
 export CI_REPO_NAME=${repoName}
